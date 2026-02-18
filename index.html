@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pay to Utkarsh</title>
+
+<style>
+
+:root {
+  --bg: linear-gradient(135deg,#fdfbfb,#ebedee);
+  --gold:#D4AF37;
+  --dark:#1A1A1A;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  background:var(--bg);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.card{
+  background:white;
+  width:100%;
+  max-width:380px;
+  padding:30px;
+  border-radius:25px;
+  text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,0.1);
+}
+
+/* Profile */
+
+.avatar{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:#f5f5f5;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  font-weight:bold;
+  color:var(--gold);
+  border:2px solid var(--gold);
+}
+
+h1{
+  margin-top:10px;
+  font-size:22px;
+}
+
+.subtitle{
+  color:gray;
+  font-size:14px;
+}
+
+/* Input */
+
+.input-box{
+  margin:25px 0;
+  position:relative;
+}
+
+.input-box span{
+  position:absolute;
+  left:15px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:28px;
+}
+
+input{
+  width:100%;
+  padding:15px 20px 15px 45px;
+  font-size:28px;
+  border-radius:15px;
+  border:2px solid #eee;
+  text-align:center;
+}
+
+input:focus{
+  outline:none;
+  border-color:var(--gold);
+}
+
+/* Button */
+
+button{
+  width:100%;
+  padding:15px;
+  background:linear-gradient(135deg,#D4AF37,#C5A028);
+  color:white;
+  font-size:17px;
+  border:none;
+  border-radius:18px;
+  cursor:pointer;
+}
+
+button:active{
+  transform:scale(0.97);
+}
+
+/* Modal */
+
+.modal{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.4);
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+}
+
+.modal.active{
+  display:flex;
+}
+
+.sheet{
+  background:white;
+  width:100%;
+  max-width:400px;
+  border-radius:25px 25px 0 0;
+  padding:25px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:20px;
+}
+
+.close{
+  background:#eee;
+  border:none;
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+}
+
+.app{
+  border:1px solid #eee;
+  padding:12px;
+  border-radius:15px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.app img{
+  width:40px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <div class="avatar">U</div>
+
+  <h1>Paying Utkarsh</h1>
+  <p class="subtitle">Click to Pay</p>
+
+  <div class="input-box">
+    <span>₹</span>
+    <input type="number" id="amount" placeholder="0">
+  </div>
+
+  <button onclick="openModal()">Proceed to Pay</button>
+
+</div>
+
+
+<!-- Modal -->
+
+<div class="modal" id="modal" onclick="outside(event)">
+
+  <div class="sheet">
+
+    <div class="header">
+      <h3>Pay <span id="showAmt" style="color:#D4AF37"></span></h3>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="grid">
+
+      <div class="app" onclick="pay('gpay')">
+        <img src="image.jpg">
+        Google Pay
+      </div>
+
+      <div class="app" onclick="pay('phonepe')">
+        <img src="image2.png">
+        PhonePe
+      </div>
+
+      <div class="app" onclick="pay('paytm')">
+        <img src="image3.jpg">
+        Paytm
+      </div>
+
+      <div class="app" onclick="pay('upi')">
+          <img src="image4.png">
+        <b>BHIM</b>Other UPI
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+
+/* CONFIG */
+
+const upi = "utkarsh6349@okicici";
+const name = "Utkarsh";
+const currency = "INR";
+
+
+function openModal(){
+
+  let amt = document.getElementById("amount").value;
+
+  if(!amt || amt<=0){
+    alert("Enter valid amount");
+    return;
+  }
+
+  document.getElementById("showAmt").innerText = "₹"+amt;
+  document.getElementById("modal").classList.add("active");
+}
+
+
+function closeModal(){
+  document.getElementById("modal").classList.remove("active");
+}
+
+
+function outside(e){
+  if(e.target.id=="modal"){
+    closeModal();
+  }
+}
+
+
+/* PAYMENT */
+
+function pay(app){
+
+  let amt = document.getElementById("amount").value;
+
+  let params =
+    "pa="+upi+
+    "&pn="+encodeURIComponent(name)+
+    "&am="+amt+
+    "&cu="+currency;
+
+  let url="";
+
+  if(app=="gpay"){
+    url="tez://upi/pay?"+params;
+  }
+  else if(app=="phonepe"){
+    url="phonepe://pay?"+params;
+  }
+  else if(app=="paytm"){
+    url="paytmmp://pay?"+params;
+  }
+  else{
+    url="upi://pay?"+params;
+  }
+
+  window.location.href = url;
+
+  setTimeout(closeModal,1000);
+}
+
+</script>
+
+</body>
+</html>
